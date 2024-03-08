@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-20">
+  <div class="container mx-auto p-4 bg-gray-200">
     <div class="bg-white rounded-xl overflow-hidden shadow-md mx-10 p-5">
       <button @click="openAddProductModal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 m-3 rounded">
         Add product
@@ -16,7 +16,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, index) in items" :key="index" class="text-gray-700">
+            <tr v-for="(item, index) in items" :key="index" class="text-gray-700 bg-gray-300">
                 <td class="border px-4 py-2 text-center">{{ item.sku }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.desc }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.qty }}</td>

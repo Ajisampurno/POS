@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto p-4 bg-gray-300">
         <div class="bg-white rounded-xl overflow-hidden shadow-md mx-10 p-5">
             <div class="mb-4">
                 <input type="text" v-model="searchQuery" class="border-gray-300 border rounded-md p-2 w-full" placeholder="Search...">
@@ -40,7 +40,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="bg-gray-100">
+                        <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="text-gray-700 bg-gray-300">
                             <td class="border px-4 py-2 text-center">{{ transaction.id }}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.date }}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.status }}</td>

@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
             $product = new Product;
 
             $product->desc = $faker->name;
-            $product->category = $faker->sentence(4);
+            $product->category = $faker->randomElement(['Makanan', 'Minuman', 'Cemilan']);
             $product->stock = $faker->numberBetween(1, 100);
             $product->price = $faker->randomFloat(2, 1000, 1000000);
 

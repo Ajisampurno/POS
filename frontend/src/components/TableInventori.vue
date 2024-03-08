@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-20">
+  <div class="container mx-auto p-4 bg-gray-300">
     <div class="bg-white rounded-xl overflow-hidden shadow-md mx-10 p-5">
         <!-- Tombol Tambah Product -->
         <div class="mt-4">
@@ -42,41 +42,50 @@
                 <div class="mt-1 flex rounded-md shadow-sm">
                     <select v-model="priceFilter" @change="filterByPrice" name="priceFilter" id="priceFilter" class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
                         <option value="">All</option>
-                        <option value="0-10">Rp0 - Rp10</option>
-                        <option value="10-20">Rp10 - Rp20</option>
+                        <option value="0-100000">Rp0-100000</option>
+                        <option value="100000-200000">Rp100000-Rp200000</option>
+                        <option value="200000-300000">Rp200000-Rp300000</option>
+                        <option value="300000-400000">Rp300000-Rp400000</option>
+                        <option value="400000-500000">Rp400000-Rp500000</option>
+                        <option value="500000-600000">Rp500000-Rp600000</option>
+                        <option value="600000-700000">Rp600000-Rp700000</option>
+                        <option value="700000-800000">Rp700000-Rp800000</option>
+                        <option value="800000-900000">Rp800000-Rp900000</option>
+                        <option value="900000-1000000">Rp900000-Rp1000000</option>
                         <!-- Tambahkan opsi harga lainnya sesuai kebutuhan -->
                     </select>
                 </div>
             </div>
         </div>
         <!-- Tabel hasil pencarian -->
-        <div class="mt-4">
+        <div class="mt-4 overflow-x-auto overflow-y-auto max-h-[400px]">
             <table class="min-w-full bg-white border-collapse rounded-lg overflow-hidden">
                 <thead class="bg-gray-800 text-white">
-                <tr>
-                    <th class="px-4 py-2 text-center">SKU</th>
-                    <th class="px-4 py-2">Desc</th>
-                    <th class="px-4 py-2">Category</th>
-                    <th class="px-4 py-2 text-center">QTY</th>
-                    <th class="px-4 py-2">Price</th>
-                    <th class="px-4 py-2 text-center">Action</th>
-                </tr>
+                    <tr>
+                        <th class="px-4 py-2 text-center">SKU</th>
+                        <th class="px-4 py-2">Desc</th>
+                        <th class="px-4 py-2">Category</th>
+                        <th class="px-4 py-2 text-center">QTY</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2 text-center">Action</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(item, index) in filteredItems" :key="index" class="text-gray-700">
-                    <td class="border px-4 py-2 text-center">{{ item.id }}</td>
-                    <td class="border px-4 py-2">{{ item.desc }}</td>
-                    <td class="border px-4 py-2">{{ item.category }}</td>
-                    <td class="border px-4 py-2 text-center">{{ item.stock }}</td>
-                    <td class="border px-4 py-2">{{ formatCurrency(item.price) }}</td>
-                    <td class="border px-4 py-2 text-center">
-                        <button @click="editProduct(index)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                        <button @click="deleteProduct(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
-                    </td>
-                </tr>
+                  <tr v-for="(item, index) in filteredItems" :key="index" class="text-gray-700 bg-gray-300">
+                      <td class="border px-4 py-2 text-center">{{ item.id }}</td>
+                      <td class="border px-4 py-2">{{ item.desc }}</td>
+                      <td class="border px-4 py-2">{{ item.category }}</td>
+                      <td class="border px-4 py-2 text-center">{{ item.stock }}</td>
+                      <td class="border px-4 py-2">{{ formatCurrency(item.price) }}</td>
+                      <td class="border px-4 py-2 text-center">
+                          <button @click="editProduct(index)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                          <button @click="deleteProduct(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                      </td>
+                  </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
   </div>
 </template>
