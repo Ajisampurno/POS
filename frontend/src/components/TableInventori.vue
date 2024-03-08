@@ -14,13 +14,13 @@
                 <input type="text" v-model="searchQuery" @input="search" name="search" id="search" class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
             </div>
         </div>
-        <!-- Filter Qty, Category, dan Price -->
+        <!-- Filter Stock, Category, dan Price -->
         <div class="mt-4 flex flex-col sm:flex-row sm:space-x-4">
-            <!-- Filter Qty -->
+            <!-- Filter Stock -->
             <div class="flex-1">
-                <label for="qtyFilter" class="block text-sm font-medium text-gray-700">Filter by Qty:</label>
+                <label for="StockFilter" class="block text-sm font-medium text-gray-700">Filter by Stock:</label>
                 <div class="mt-1 flex rounded-md shadow-sm">
-                    <select v-model="qtyFilter" @change="filterByQty" name="qtyFilter" id="qtyFilter" class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
+                    <select v-model="StockFilter" @change="filterByStock" name="StockFilter" id="StockFilter" class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300">
                         <option value="">All</option>
                         <option v-for="quantity in quantities" :key="quantity" :value="quantity">{{ quantity }}</option>
                     </select>
@@ -64,10 +64,10 @@
                 </thead>
                 <tbody>
                 <tr v-for="(item, index) in filteredItems" :key="index" class="text-gray-700">
-                    <td class="border px-4 py-2 text-center">{{ item.sku }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.id }}</td>
                     <td class="border px-4 py-2">{{ item.desc }}</td>
                     <td class="border px-4 py-2">{{ item.category }}</td>
-                    <td class="border px-4 py-2 text-center">{{ item.qty }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.stock }}</td>
                     <td class="border px-4 py-2">{{ formatCurrency(item.price) }}</td>
                     <td class="border px-4 py-2 text-center">
                         <button @click="editProduct(index)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
@@ -82,19 +82,16 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       searchQuery: '',
-      qtyFilter: '',
+      StockFilter: '',
       categoryFilter: '',
       priceFilter: '',
-      items: [
-        { sku: 'SKU001', desc: 'Product 1', category: 'Category 1', qty: 5, price: 10.99 },
-        { sku: 'SKU002', desc: 'Product 2', category: 'Category 2', qty: 3, price: 15.99 },
-        { sku: 'SKU003', desc: 'Product 3', category: 'Category 1', qty: 8, price: 20.49 }
-        // Tambahkan item lainnya sesuai kebutuhan
-      ]
+      items: []
     };
   },
   computed: {
@@ -103,12 +100,12 @@ export default {
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         filteredItems = filteredItems.filter(item => {
-          return item.sku.toLowerCase().includes(query);
+          return String(item.desc).toLowerCase().includes(query);
         });
       }
-      if (this.qtyFilter) {
+      if (this.StockFilter) {
         filteredItems = filteredItems.filter(item => {
-          return item.qty === this.qtyFilter;
+          return item.stock === this.StockFilter;
         });
       }
       if (this.categoryFilter) {
@@ -128,37 +125,38 @@ export default {
       return [...new Set(this.items.map(item => item.category))];
     },
     quantities() {
-      return [...new Set(this.items.map(item => item.qty))];
+      return [...new Set(this.items.map(item => item.stock))];
     }
   },
   methods: {
-    search() {
-      // Fungsi ini tidak perlu dilakukan karena pencarian sudah diimplementasikan menggunakan computed property filteredItems
-    },
-    filterByQty() {
-      // Fungsi ini tidak perlu dilakukan karena filter berdasarkan Qty sudah diimplementasikan menggunakan computed property filteredItems
-    },
-    filterByCategory() {
-      // Fungsi ini tidak perlu dilakukan karena filter berdasarkan Category sudah diimplementasikan menggunakan computed property filteredItems
-    },
-    filterByPrice() {
-      // Fungsi ini tidak perlu dilakukan karena filter berdasarkan Price sudah diimplementasikan menggunakan computed property filteredItems
+    fetchData() {
+      axios.get('http://127.0.0.1:8000/api/products')
+        .then(response => {
+          this.items = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
     },
     addProduct() {
-      // Logika untuk menambahkan produk baru
-      console.log('Tambah Product');
+      // Logic to add a new product
+      console.log('Add Product');
     },
     editProduct(index) {
-      // Logika untuk mengedit produk
+      // Logic to edit a product
       console.log('Edit Product', index);
     },
     deleteProduct(index) {
-      // Logika untuk menghapus produk
+      // Logic to delete a product
       console.log('Delete Product', index);
     },
     formatCurrency(value) {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
-    }
+    },
+  },
+  created() {
+    this.fetchData();
   }
 };
 </script>
+
