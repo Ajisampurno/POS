@@ -40,11 +40,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in paginatedTransactions" :key="index" class="bg-gray-100">
-                            <td class="border px-4 py-2 text-center">{{ item.kodeTrx }}</td>
-                            <td class="border px-4 py-2 text-center">{{ item.date }}</td>
-                            <td class="border px-4 py-2 text-center">{{ item.status }}</td>
-                            <td class="border px-4 py-2 text-center">{{ item.paymentMethod }}</td>
+                        <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="bg-gray-100">
+                            <td class="border px-4 py-2 text-center">{{ transaction.id }}</td>
+                            <td class="border px-4 py-2 text-center">{{ transaction.date }}</td>
+                            <td class="border px-4 py-2 text-center">{{ transaction.status }}</td>
+                            <td class="border px-4 py-2 text-center">{{ transaction.payment.metode }}</td>
                             <td class="border px-4 py-2 text-center">
                                 <button @click="showItem(index)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Show</button>
                                 <button @click="editItem(index)" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
@@ -67,16 +67,12 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-            transactions: [
-                { kodeTrx: 'TRX001', date: '2024-03-01', status: 'Pending', paymentMethod: 'Credit Card' },
-                { kodeTrx: 'TRX002', date: '2024-03-02', status: 'Completed', paymentMethod: 'PayPal' },
-                { kodeTrx: 'TRX003', date: '2024-03-03', status: 'Failed', paymentMethod: 'Bank Transfer' },
-                { kodeTrx: 'TRX004', date: '2024-03-04', status: 'Pending', paymentMethod: 'Cash' },
-                // Add more transactions as needed
-            ],
+            transactions: [],
             searchQuery: '',
             startDateFilter: '',
             endDateFilter: '',
@@ -95,7 +91,7 @@ export default {
         },
         filteredTransactions() {
             return this.transactions.filter(item =>
-                item.kodeTrx.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+                String(item.id).toLowerCase().includes(this.searchQuery.toLowerCase()) &&
                 (this.startDateFilter ? item.date >= this.startDateFilter : true) &&
                 (this.endDateFilter ? item.date <= this.endDateFilter : true) &&
                 (this.statusFilter ? item.status.toLowerCase() === this.statusFilter.toLowerCase() : true) &&
@@ -133,7 +129,19 @@ export default {
             if (this.currentPage < this.pageCount) {
                 this.currentPage++;
             }
+        },
+        fetchData() {
+            axios.get('http://127.0.0.1:8000/api/transactions')
+                .then(response => {
+                    this.transactions = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
+    },
+    mounted(){
+        this.fetchData();        
     }
 };
 </script>

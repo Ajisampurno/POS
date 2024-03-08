@@ -21,4 +21,6 @@ Route::get('/', function () {
 });
 
 Route::get('api/transactions', [TransactionController::class, 'api']);
+Route::get('api/transactions/{transaction}', [TransactionController::class, 'show']);
+
 Route::get('api/products', [ProductController::class, 'api']);

@@ -16,7 +16,9 @@ class TransactionController extends Controller
 
     public function api()
     {
-        $data = Transaction::with('transactiondetails')->with('payment')->get();
+        $data = Transaction::with('transactiondetails')
+            ->with('payment')
+            ->get();
 
         return $data;
     }
@@ -55,7 +57,7 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        //
+        return $transaction;
     }
 
     /**
