@@ -40,7 +40,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="text-gray-700 bg-gray-300">
+                        <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="text-gray-700 bg-gray-100">
                             <td class="border px-4 py-2 text-center">{{ transaction.id }}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.date }}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.status }}</td>

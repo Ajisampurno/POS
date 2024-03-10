@@ -3,7 +3,7 @@
     <div class="bg-white rounded-xl overflow-hidden shadow-md mx-10 p-5">
         <!-- Tombol Tambah Product -->
         <div class="mt-4">
-            <button @click="addProduct" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button @click="addProductModal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Tambah Product
             </button>
         </div>
@@ -65,13 +65,13 @@
                         <th class="px-4 py-2 text-center">SKU</th>
                         <th class="px-4 py-2">Desc</th>
                         <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2 text-center">QTY</th>
+                        <th class="px-4 py-2 text-center">Stock</th>
                         <th class="px-4 py-2">Price</th>
                         <th class="px-4 py-2 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in filteredItems" :key="index" class="text-gray-700 bg-gray-300">
+                  <tr v-for="(item, index) in filteredItems" :key="index" class="text-gray-700 bg-gray-100">
                       <td class="border px-4 py-2 text-center">{{ item.id }}</td>
                       <td class="border px-4 py-2">{{ item.desc }}</td>
                       <td class="border px-4 py-2">{{ item.category }}</td>
@@ -88,6 +88,46 @@
 
     </div>
   </div>
+
+  <!-- Add Product Modal -->
+  <div :class="{ 'hidden': !isAddProductModalOpen }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div class="bg-white p-8 rounded-md w-[500px]">
+          <h2 class="text-lg font-semibold">Add Product Modal</h2>
+          <!-- Form untuk menambahkan produk -->
+          <form>
+            <div class="mb-4">
+              <label for="desc" class="block text-sm font-medium text-gray-700">Desc:</label>
+              <input  type="text" id="desc" name="desc" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+              <label for="category" class="block text-sm font-medium text-gray-700">Category:</label>
+                <select  id="category" name="category" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select Category</option>
+                <option value="Makanan">Makanan</option>
+                <option value="Minuman">Minuman</option>
+                <option value="Cemilan">Cemilan</option>
+                <!-- Tambahkan opsi SKU lainnya sesuai kebutuhan -->
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="stock" class="block text-sm font-medium text-gray-700">Stock:</label>
+              <input  type="number" id="stock" name="stock" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+              <label for="price" class="block text-sm font-medium text-gray-700">Price:</label>
+              <input  type="number" id="price" name="price" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div @click="closeAddProductModal" class="flex justify-end">
+              <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
+              Cancel
+              </button>
+              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Add
+              </button>
+            </div>
+          </form>
+      </div>
+  </div>
 </template>
 
 <script>
@@ -100,6 +140,7 @@ export default {
       StockFilter: '',
       categoryFilter: '',
       priceFilter: '',
+      isAddProductModalOpen: false,
       items: []
     };
   },
@@ -147,9 +188,11 @@ export default {
           console.error('Error fetching data:', error);
         });
     },
-    addProduct() {
-      // Logic to add a new product
-      console.log('Add Product');
+    addProductModal() {
+      this.isAddProductModalOpen = true;
+    },
+    closeAddProductModal() {
+      this.isAddProductModalOpen = false;
     },
     editProduct(index) {
       // Logic to edit a product

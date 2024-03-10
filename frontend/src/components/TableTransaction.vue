@@ -10,15 +10,17 @@
             <tr>
                 <th class="px-4 py-2">SKU</th>
                 <th class="px-4 py-2">Desc</th>
+                <th class="px-4 py-2">Category</th>
                 <th class="px-4 py-2">QTY</th>
                 <th class="px-4 py-2">Price</th>
                 <th class="px-4 py-2">Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, index) in items" :key="index" class="text-gray-700 bg-gray-300">
+            <tr v-for="(item, index) in items" :key="index" class="text-gray-700 bg-gray-100">
                 <td class="border px-4 py-2 text-center">{{ item.sku }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.desc }}</td>
+                <td class="border px-4 py-2 text-center">{{ item.category }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.qty }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.price }}</td>
                 <td class="border px-4 py-2 text-center">
@@ -58,24 +60,27 @@
 
   <!-- Add Product Modal -->
   <div :class="{ 'hidden': !isAddProductModalOpen }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-      <div class="bg-white p-8 rounded-md">
+      <div class="bg-white p-8 rounded-md w-[600px]">
           <h2 class="text-lg font-semibold">Add Product Modal</h2>
           <!-- Form untuk menambahkan produk -->
           <form>
               <div class="mb-4">
                   <label for="sku" class="block text-sm font-medium text-gray-700">SKU:</label>
-                  <select  id="sku" name="sku" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                  <option value="">Select SKU</option>
-                  <option value="SKU001">SKU001</option>
-                  <option value="SKU002">SKU002</option>
-                  <option value="SKU003">SKU003</option>
-                  <!-- Tambahkan opsi SKU lainnya sesuai kebutuhan -->
-                  </select>
-              </div>
-              <div class="mb-4">
-                  <label for="qty" class="block text-sm font-medium text-gray-700">Qty:</label>
-                  <input  type="number" id="qty" name="qty" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-              </div>
+                  <input type="text" v-model="search" class="block w-full border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Search..."/>
+                </div>
+                <div class="mb-4">
+                  <table>
+                    <tr v-if="searchedItem">
+                      <td class="px-2">{{ searchedItem.sku }}</td>
+                      <td class="px-2">{{ searchedItem.desc }}</td>
+                      <td class="px-2">{{ searchedItem.category }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div v-if="searchedItem" class="mb-4">
+                  <label for="qty" class="flex text-sm font-medium text-gray-700">Qty:</label>
+                  <input  type="number" id="qty" name="qty" min="1" class="flex w-full border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
               <div @click="closeAddProductModal" class="flex justify-end">
                   <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
                   Cancel
@@ -175,11 +180,12 @@ export default {
   data() {
     return {
       items: [
-          { sku: 'SKU001', desc: 'Product 1', qty: 5, price: 10.99 },
-          { sku: 'SKU002', desc: 'Product 2', qty: 3, price: 15.99 },
-          { sku: 'SKU003', desc: 'Product 3', qty: 8, price: 20.49 }
+          { sku: '320001', desc: 'Product 1', category:'Minuman', qty: 5, price: 10.99 },
+          { sku: '320002', desc: 'Product 2', category:'Makanan', qty: 3, price: 15.99 },
+          { sku: '320003', desc: 'Product 3', category:'Cemilan', qty: 8, price: 20.49 }
           // Tambahkan item lainnya sesuai kebutuhan
       ],
+      search: '',
       isAddProductModalOpen: false,
       isPaymentModalOpen: false,
       isEditProductModalOpen: false,
@@ -190,6 +196,12 @@ export default {
           refCode: ''
       }
     };
+  },
+  computed: {
+    searchedItem() {
+      console.log(this.items.find(item => item.sku === this.search));
+      return this.items.find(item => item.sku === this.search);
+    },
   },
   methods: {
     openAddProductModal() {
