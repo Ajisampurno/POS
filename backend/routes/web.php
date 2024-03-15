@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionDetailController;
@@ -19,8 +21,3 @@ use App\Http\Controllers\TransactionDetailController;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('api/transactions', [TransactionController::class, 'api']);
-Route::get('api/transactions/{transaction}', [TransactionController::class, 'show']);
-
-Route::get('api/products', [ProductController::class, 'api']);

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Models\Payment;
+use App\Models\TransactionDetail;
 
 class TransactionController extends Controller
 {
@@ -16,10 +18,9 @@ class TransactionController extends Controller
 
     public function api()
     {
-        $data = Transaction::with('transactiondetails')
-            ->with('payment')
-            ->get();
+        $data = Payment::all();
 
+        //$data = Payment::with('transactions')->get();
         return $data;
     }
 
@@ -57,7 +58,12 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        return $transaction;
+        $data = Payment::select('*')
+            ->join('transactions', 'transactions.payment_id', '=', 'payments.id')
+            ->join('products', 'products.id', '=', 'product_id')
+            ->where('payments.id', $transaction->id)
+            ->get();
+        return $data;
     }
 
     /**
@@ -80,7 +86,14 @@ class TransactionController extends Controller
      */
     public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        //
+        $this->validate($request, [
+            'desc' => ['required'],
+            'status' => ['required'],
+            'metode' => ['required'],
+            'card_number' => ['required'],
+            'code_ref' => ['required'],
+        ]);
+        Payment::finOrFail($request->id)->update($request->all());
     }
 
     /**
@@ -89,8 +102,10 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Transaction $transaction)
+    public function destroy($id)
     {
-        //
+        Payment::find($id)->delete();
+
+        return true;
     }
 }

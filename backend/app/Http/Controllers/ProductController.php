@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -42,13 +43,23 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        $this->validate($request, [
-            'desc' => ['required'],
-            'category' => ['required'],
-            'stock' => ['required'],
-            'price' => ['required'],
-        ]);
-        Product::create($request->all());
+        //$this->validate($request, [
+        //    'desc' => ['required'],
+        //    'category' => ['required'],
+        //    'stock' => ['required'],
+        //    'price' => ['required'],
+        //]);
+        //Product::create($request->all());
+
+        $product = Product::create(
+            [
+                "desc" => request("desc"),
+                "category" => request("category"),
+                "stock" => request("stock"),
+                "price" => request("price"),
+            ]
+        );
+        return response()->json($product);
     }
 
     /**
@@ -93,6 +104,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return true;
     }
 }

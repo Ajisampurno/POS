@@ -18,6 +18,8 @@ class CreatePaymentsTable extends Migration
             $table->integer('cash');
             $table->string('metode');
             $table->integer('number_card');
+            $table->date('date');
+            $table->string('status');
             $table->integer('code_ref');
             $table->timestamps();
         });

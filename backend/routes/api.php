@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +21,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::get('payments', [PaymentController::class, 'api']);
+Route::get('payments/{payment}', [paymentController::class, 'show']);
+Route::delete('payments/{id}', [PaymentController::class, 'destroy']);
+
+Route::get('products', [ProductController::class, 'api']);
+Route::post('products', [ProductController::class, 'store']);
+Route::delete('products/{product}', [ProductController::class, 'destroy']);
+
+Route::get('carts', [CartController::class, 'api']);
+Route::post('carts', [CartController::class, 'store']);

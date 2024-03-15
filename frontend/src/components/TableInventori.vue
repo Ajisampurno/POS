@@ -3,7 +3,7 @@
     <div class="bg-white rounded-xl overflow-hidden shadow-md mx-10 p-5">
         <!-- Tombol Tambah Product -->
         <div class="mt-4">
-            <button @click="addProductModal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button @click="createModalOpen" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Tambah Product
             </button>
         </div>
@@ -78,8 +78,8 @@
                       <td class="border px-4 py-2 text-center">{{ item.stock }}</td>
                       <td class="border px-4 py-2">{{ formatCurrency(item.price) }}</td>
                       <td class="border px-4 py-2 text-center">
-                          <button @click="editProduct(index)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                          <button @click="deleteProduct(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                        <button @click="editModalOpen(index)" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>  
+                        <button @click="deleteProduct(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
                       </td>
                   </tr>
                 </tbody>
@@ -90,44 +90,54 @@
   </div>
 
   <!-- Add Product Modal -->
-  <div :class="{ 'hidden': !isAddProductModalOpen }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-      <div class="bg-white p-8 rounded-md w-[500px]">
-          <h2 class="text-lg font-semibold">Add Product Modal</h2>
-          <!-- Form untuk menambahkan produk -->
-          <form>
-            <div class="mb-4">
-              <label for="desc" class="block text-sm font-medium text-gray-700">Desc:</label>
-              <input  type="text" id="desc" name="desc" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-              <label for="category" class="block text-sm font-medium text-gray-700">Category:</label>
-                <select  id="category" name="category" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Select Category</option>
-                <option value="Makanan">Makanan</option>
-                <option value="Minuman">Minuman</option>
-                <option value="Cemilan">Cemilan</option>
-                <!-- Tambahkan opsi SKU lainnya sesuai kebutuhan -->
-              </select>
-            </div>
-            <div class="mb-4">
-              <label for="stock" class="block text-sm font-medium text-gray-700">Stock:</label>
-              <input  type="number" id="stock" name="stock" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-              <label for="price" class="block text-sm font-medium text-gray-700">Price:</label>
-              <input  type="number" id="price" name="price" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div @click="closeAddProductModal" class="flex justify-end">
-              <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
-              Cancel
-              </button>
-              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Add
-              </button>
-            </div>
-          </form>
+  <div :class="{ 'hidden': !createModal }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+    <div class="bg-white p-8 rounded-md w-[500px]">
+      <h2 class="text-lg font-semibold">Add Product Modal</h2>
+      <label for="desc" class="block mt-2">Desc</label>
+      <input type="text" id="desc" name="desc" v-model="formData.desc" class=" border rounded-md shadow-md w-full p-1">
+      <label for="category" class="block mt-2">Category</label>
+      <select name="category" id="category" v-model="formData.category">
+        <option value="">Pilih kategori</option>
+        <option value="Makanan">Makanan</option>
+        <option value="Minuman">Minuman</option>
+        <option value="Cemilan">Cemilan</option>
+      </select>
+      <label for="stock" class="block mt-2">Stock</label>
+      <input type="number" id="stock" name="stock" v-model="formData.stock" class=" border rounded w-full p-1">
+      <label for="price" class="block mt-2">Price</label>
+      <input type="number" id="price" name="price" v-model="formData.price" class=" border rounded w-full p-1">    
+      <div class="flex my-2 justify-end mt-2">
+        <button @click="createModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
+        <button @click="submitFormProduct" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
       </div>
+    </div>
   </div>
+
+  <!-- Edit Product Modal -->
+  
+  <div :class="{ 'hidden': !editModal }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+    <div class="bg-white p-8 rounded-md w-[500px]">
+      <h2 class="text-lg font-semibold">Edit Product Modal</h2>
+      <label for="desc" class="block mt-2">Desc</label>
+      <input type="text" id="desc" name="desc" v-model="formData.desc" class=" border rounded-md shadow-md w-full p-1">
+      <label for="category" class="block mt-2">Category</label>
+      <select name="category" id="category" v-model="formData.category">
+        <option value="">Pilih kategori</option>
+        <option value="Makanan">Makanan</option>
+        <option value="Minuman">Minuman</option>
+        <option value="Cemilan">Cemilan</option>
+      </select>
+      <label for="stock" class="block mt-2">Stock</label>
+      <input type="number" id="stock" name="stock" v-model="formData.stock" class=" border rounded w-full p-1">
+      <label for="price" class="block mt-2">Price</label>
+      <input type="number" id="price" name="price" v-model="formData.price" class=" border rounded w-full p-1">    
+      <div class="flex my-2 justify-end mt-2">
+        <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
+        <button @click="submitFormProduct" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
+      </div>
+    </div>
+  </div>
+  
 </template>
 
 <script>
@@ -140,8 +150,15 @@ export default {
       StockFilter: '',
       categoryFilter: '',
       priceFilter: '',
-      isAddProductModalOpen: false,
-      items: []
+      createModal: false,
+      editModal:false,
+      items: [],
+      formData: {
+        desc: "",
+        category: "",
+        stock:"",
+        price:""   
+      }
     };
   },
   computed: {
@@ -179,6 +196,47 @@ export default {
     }
   },
   methods: {
+    // Action create
+    createModalOpen() {
+      this.createModal = true;
+    },
+    createModalClose() {
+      this.createModal = false;
+    },
+    // Action update
+    editModalOpen(index) {
+      this.editModal = true;
+      this.formData = this.items[index];
+      console.log('Edit Product', this.item);
+    },
+    editModalClose() {
+      this.editModal = false;
+    },
+    editModalSubmit(){
+
+    },
+    //Action delete
+    deleteProduct(index) {
+      axios
+        .delete('http://127.0.0.1:8000/products/'+index)
+        .then(response => {
+            alert(response.data.message);
+            this.fetchData(); // Mengambil data lagi setelah penghapusan berhasil
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    },
+    formatCurrency(value) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+    },
+    submitFormProduct() {
+      axios.post('http://127.0.0.1:8000/transactions', this.formData).then(ret => {
+          console.log('sukses')
+      }).catch(err=>{
+          console.log("GAGAL SUBMIT", err)
+      })
+    },
     fetchData() {
       axios.get('http://127.0.0.1:8000/api/products')
         .then(response => {
@@ -187,23 +245,6 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-    },
-    addProductModal() {
-      this.isAddProductModalOpen = true;
-    },
-    closeAddProductModal() {
-      this.isAddProductModalOpen = false;
-    },
-    editProduct(index) {
-      // Logic to edit a product
-      console.log('Edit Product', index);
-    },
-    deleteProduct(index) {
-      // Logic to delete a product
-      console.log('Delete Product', index);
-    },
-    formatCurrency(value) {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
     },
   },
   created() {

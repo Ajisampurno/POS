@@ -13,6 +13,13 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function api()
+    {
+        $data = Payment::all();
+
+        return $data;
+    }
     public function index()
     {
         //
@@ -47,7 +54,12 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        //
+        $data = Payment::select('*')
+            ->join('transactions', 'transactions.payment_id', '=', 'payments.id')
+            ->join('products', 'products.id', '=', 'product_id')
+            ->where('payments.id', $payment->id)
+            ->get();
+        return $data;
     }
 
     /**
@@ -81,6 +93,7 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
-        //
+        $payment->delete();
+        return true;
     }
 }

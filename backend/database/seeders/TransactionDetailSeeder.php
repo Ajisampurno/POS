@@ -19,9 +19,6 @@ class TransactionDetailSeeder extends Seeder
         $faker = Faker::create();
         for ($i = 0; $i < 20; $i++) {
             $transaction_detail = new TransactionDetail();
-
-            $transaction_detail->transaction_id = $faker->numberBetween(1, 20);
-
             $transaction_detail->save();
         }
     }
