@@ -16,7 +16,7 @@ class CartController extends Controller
 
     public function api()
     {
-        $data = Cart::select('*')
+        $data = Cart::select('carts.id', 'product_id', 'desc', 'category', 'carts.qty', 'price')
             ->join('products', 'products.id', '=', 'carts.product_id')
             ->get();
 
@@ -97,6 +97,7 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart)
     {
-        //
+        $cart->delete();
+        return true;
     }
 }

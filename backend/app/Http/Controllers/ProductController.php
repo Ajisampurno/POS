@@ -43,14 +43,6 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //$this->validate($request, [
-        //    'desc' => ['required'],
-        //    'category' => ['required'],
-        //    'stock' => ['required'],
-        //    'price' => ['required'],
-        //]);
-        //Product::create($request->all());
-
         $product = Product::create(
             [
                 "desc" => request("desc"),
@@ -91,9 +83,12 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
-        //
+        $product = Product::findOrFail($product->id);
+        $product->update($request->all());
+
+        return true;
     }
 
     /**

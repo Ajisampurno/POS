@@ -78,8 +78,8 @@
                       <td class="border px-4 py-2 text-center">{{ item.stock }}</td>
                       <td class="border px-4 py-2">{{ formatCurrency(item.price) }}</td>
                       <td class="border px-4 py-2 text-center">
-                        <button @click="editModalOpen(index)" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>  
-                        <button @click="deleteProduct(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                        <button @click="editModalOpen(index,item.id)" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>  
+                        <button @click="deleteItem(item.id)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
                       </td>
                   </tr>
                 </tbody>
@@ -108,7 +108,7 @@
       <input type="number" id="price" name="price" v-model="formData.price" class=" border rounded w-full p-1">    
       <div class="flex my-2 justify-end mt-2">
         <button @click="createModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
-        <button @click="submitFormProduct" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
+        <button @click="submitFormProduct()" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
       </div>
     </div>
   </div>
@@ -133,7 +133,7 @@
       <input type="number" id="price" name="price" v-model="formData.price" class=" border rounded w-full p-1">    
       <div class="flex my-2 justify-end mt-2">
         <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
-        <button @click="submitFormProduct" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
+        <button @click="editModalSubmit(this.formData.id)" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
       </div>
     </div>
   </div>
@@ -154,10 +154,10 @@ export default {
       editModal:false,
       items: [],
       formData: {
-        desc: "",
-        category: "",
-        stock:"",
-        price:""   
+        desc: '',
+        category: '',
+        stock:'',
+        price:''   
       }
     };
   },
@@ -204,38 +204,44 @@ export default {
       this.createModal = false;
     },
     // Action update
-    editModalOpen(index) {
-      this.editModal = true;
+    editModalOpen(index,id) {
       this.formData = this.items[index];
-      console.log('Edit Product', this.item);
+      this.editModal = true;
     },
     editModalClose() {
       this.editModal = false;
     },
-    editModalSubmit(){
-
-    },
-    //Action delete
-    deleteProduct(index) {
-      axios
-        .delete('http://127.0.0.1:8000/products/'+index)
+    editModalSubmit(id){
+      axios.put('http://127.0.0.1:8000/api/products/'+id,this.formData)
         .then(response => {
-            alert(response.data.message);
-            this.fetchData(); // Mengambil data lagi setelah penghapusan berhasil
+            this.editModal = false;
+            this.fetchData();
         })
         .catch(error => {
-            console.log(error);
+            console.error('Error deleting data:', error);
         });
     },
-    formatCurrency(value) {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
-    },
-    submitFormProduct() {
-      axios.post('http://127.0.0.1:8000/transactions', this.formData).then(ret => {
-          console.log('sukses')
-      }).catch(err=>{
-          console.log("GAGAL SUBMIT", err)
-      })
+    deleteItem(id) {
+      axios.delete('http://127.0.0.1:8000/api/products/'+id)
+        .then(response => {
+          this.fetchData();
+        })
+        .catch(error => {
+          console.error('Error deleting data:', error);
+        });
+      },
+      formatCurrency(value) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+      },
+      submitFormProduct() {
+        axios.post('http://127.0.0.1:8000/api/products', this.formData)
+        .then(ret => {
+          this.fetchData();
+          this.createModal = false;
+        })
+        .catch(error => {
+            console.error('Error deleting data:', error);
+        });
     },
     fetchData() {
       axios.get('http://127.0.0.1:8000/api/products')

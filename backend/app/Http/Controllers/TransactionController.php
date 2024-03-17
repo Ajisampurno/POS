@@ -45,9 +45,15 @@ class TransactionController extends Controller
      * @param  \App\Http\Requests\StoreTransactionRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreTransactionRequest $request)
+    public function store(Request $request)
     {
-        //
+        foreach ($request->product_id as $product_id) {
+            Transaction::create([
+                'product_id' => $product_id,
+                'qty' => 1
+            ]);
+        }
+        return true;
     }
 
     /**

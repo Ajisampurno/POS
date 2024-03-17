@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
+use Ramsey\Uuid\Uuid;
 use App\Models\Payment;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 
@@ -43,7 +47,18 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request)
     {
-        //
+        $uuid = Uuid::uuid4();
+        Payment::create([
+            'id' => $uuid,
+            'amount' => $request->amount,
+            'metode' => $request->metode,
+            'number_card' => $request->number_card,
+            'date' => date('y-m-d'),
+            'status' => 'sale',
+            'code_ref' => $request->code_ref
+        ]);
+        Cart::truncate();
+        return true;
     }
 
     /**

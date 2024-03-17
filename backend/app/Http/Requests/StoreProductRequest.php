@@ -11,9 +11,9 @@ class StoreProductRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +21,13 @@ class StoreProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            'desc' => 'nullable',
+            'category' => 'nullable',
+            'stock' => 'nullable',
+            'price' => 'nullable',
         ];
     }
 }

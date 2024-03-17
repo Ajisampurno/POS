@@ -21,7 +21,7 @@ class PaymentSeeder extends Seeder
         for ($i = 0; $i < 20; $i++) {
             $payment = new Payment;
 
-            $payment->cash = $faker->randomFloat(2, 1000, 1000000);
+            $payment->amount = $faker->randomFloat(2, 1000, 1000000);
             $payment->metode = $faker->randomElement(['Debit', 'Credit', 'Qris', 'Cash']);
             $payment->number_card = $faker->randomNumber(8);
             $payment->code_ref = $faker->randomNumber(6);

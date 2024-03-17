@@ -21,7 +21,7 @@
     <br>
     <div class="bg-white rounded-xl overflow-hidden shadow-lg mx-10 p-5">
       <label>Scan Product</label>
-      <input v-model="formDataCart.product_id" @keyup.enter="scanProduct" type="text" class="flex w-[500px] border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center mb-5" />
+      <input v-model="formDataCart.product_id" @keyup.enter="scanProduct" type="text" class="flex w-[500px] border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 mb-5" />
       <div class="max-h-80 overflow-y-auto shadow-lg">
         <table class="min-w-full bg-white border-collapse rounded-lg table-responsive">
             <thead class="bg-gray-800 text-white">
@@ -37,7 +37,9 @@
             </thead>
             <tbody>
               <tr v-for="(item, index) in items" :key="index" class="text-gray-700 bg-gray-100">
-                <td class="border px-4 py-2 text-center">{{ item.product_id }}</td>
+                <td class="border text-center">
+                  <input v-model="item.product_id" type="disable" class="text-center text-gray-700 bg-gray-100"/>
+                </td>
                 <td class="border px-4 py-2 text-center">{{ item.desc }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.category }}</td>
                 <td class="border flex justify-center px-2 py-2">
@@ -48,7 +50,7 @@
                 <td class="border px-4 py-2 text-center">
                   <div class="flex justify-center space-x-2">
                     <!-- Tombol Delete -->
-                    <button @click="deleteItem(index)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    <button @click="deleteItem(item.id)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         Delete
                     </button>
                   </div>
@@ -64,82 +66,54 @@
       </div>
     </div>
   </div>
-
-  <!-- Add Product Modal -->
-  <div :class="{ 'hidden': !isEditProductModalOpen }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-      <div class="bg-white p-8 rounded-md">
-          <h2 class="text-lg font-semibold">Edit Product Modal</h2>
-          <!-- Form untuk menambahkan produk -->
-          <form>
-              <div class="mb-4">
-                  <label for="sku" class="block text-sm font-medium text-gray-700">SKU:</label>
-                  <select  id="sku" name="sku" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                  <option value="">Select SKU</option>
-                  <option value="SKU001">SKU001</option>
-                  <option value="SKU002">SKU002</option>
-                  <option value="SKU003">SKU003</option>
-                  <!-- Tambahkan opsi SKU lainnya sesuai kebutuhan -->
-                  </select>
-              </div>
-              <div class="mb-4">
-                  <label for="qty" class="block text-sm font-medium text-gray-700">Qty:</label>
-                  <input  type="number" id="qty" name="qty" min="1" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div @click="closeEditProductModal" class="flex justify-end">
-                  <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
-                  Cancel
-                  </button>
-                  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Add
-                  </button>
-              </div>
-          </form>
-      </div>
-  </div>
-
-
   <!-- Payment Modal -->
   <div :class="{ 'hidden': !isPaymentModalOpen }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-    <div class="bg-white p-8 rounded-md">
+    <div class="min-w-[300px] bg-white p-8 rounded-md">
       <h2 class="text-lg font-semibold mb-4">Open Payment</h2>
-        <!-- Formulir untuk pembayaran -->
-        <form>
-          <div class="mb-4">
-            <label for="cardBank" class="block text-sm font-medium text-gray-700">Card Bank:</label>
-            <select id="cardBank" name="cardBank" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Select Card Bank</option>
-              <option value="Cash">Cash</option>
-              <option value="Debit BCA">Debit BCA</option>
-              <option value="Debit BNI">Debit BNI</option>
-              <option value="Debit BRI">Debit BRI</option>
-              <option value="Credit BCA">Credit BCA</option>
-              <option value="Credit BNI">Credit BNI</option>
-              <option value="Credit BRI">Credit BRI</option>
-              <option value="Qris">Qris</option>
-              <!-- Tambahkan opsi bank lainnya sesuai kebutuhan -->
-            </select>
-          </div>
-          <div class="mb-4">
+        <div class="mb-4">
+          <label for="metode" class="block text-sm font-medium text-gray-700">Payment metode:</label>
+          <select id="metode" name="metode" v-model="formDataPayment.metode" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Select Payment Metode</option>
+            <option value="Cash">Cash</option>
+            <option value="Debit BCA">Debit BCA</option>
+            <option value="Debit BNI">Debit BNI</option>
+            <option value="Debit BRI">Debit BRI</option>
+            <option value="Credit BCA">Credit BCA</option>
+            <option value="Credit BNI">Credit BNI</option>
+            <option value="Credit BRI">Credit BRI</option>
+            <option value="Qris">Qris</option>
+            <!-- Tambahkan opsi bank lainnya sesuai kebutuhan -->
+          </select>
+        </div>
+        <div class="mb-4" v-if="formDataPayment.metode !== ''">
+          <div class="mb-4" v-if="formDataPayment.metode == 'Cash'">
             <label for="cash" class="block text-sm font-medium text-gray-700">Cash:</label>
-            <input type="number" id="cash" name="cash" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <input type="number" id="cash" name="cash" v-model="cash" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           </div>
           <div class="mb-4">
-            <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card Number:</label>
-            <input type="number" id="cardNumber" name="cardNumber" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <ul>
+              <li>Total yang harus di bayar: <span class="font-bold text-lg">Rp. {{ getTotalPrice() }}</span> </li>
+              <li v-if="formDataPayment.metode == 'Cash'">Kembali: <span class="font-bold text-lg">Rp. {{ getChange() }} </span></li>
+            </ul>
           </div>
-          <div class="mb-4">
-            <label for="refCode" class="block text-sm font-medium text-gray-700">Ref Code:</label>
-            <input type="number" id="refCode" name="refCode" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <div class="mb-4" v-if="formDataPayment.metode !== 'Cash'">
+            <label for="number_card" class="block text-sm font-medium text-gray-700">Card Number:</label>
+            <input type="number" id="number_card" name="number_card" v-model="formDataPayment.number_card" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           </div>
-          <div class="flex justify-end">
-            <button @click="closePaymentModal" type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
-              Cancel
-            </button>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Submit
-            </button>
+          <div class="mb-4" v-if="formDataPayment.metode !== 'Cash'">
+            <label for="code_ref" class="block text-sm font-medium text-gray-700">Ref Code:</label>
+            <input type="number" id="code_ref" name="code_ref" v-model="formDataPayment.code_ref" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           </div>
-        </form>
+        </div>
+        <input v-model="formDataPayment.amount" type="hidden" />
+        <div class="flex justify-end">
+          <button @click="closePaymentModal" type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-2 rounded">
+            Cancel
+          </button>
+          <button type="submit" @click="submitFormDataPayment()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Submit
+          </button>
+        </div>
     </div>
   </div>
 </template>
@@ -153,23 +127,22 @@ export default {
       items: [],
       search: '',
       isPaymentModalOpen: false,
-      paymentInfo: {
-          paymentMethod: '',
-          cardBank: '',
-          cardNumber: '',
-          refCode: ''
+      cash:'',
+      formDataPayment:{
+        amount: '',
+        metode: '',
+        number_card: '',
+        code_ref:'',
+        transactions:[]
       },
       formDataCart: {
         product_id: '',
         qty:1,
       },
-      
     };
   },
   computed: {
-    searchedItem() {
-      return this.items.find(item => item.sku === this.search);
-    },
+
   },
   methods: {
     openPaymentModal() {
@@ -192,6 +165,37 @@ export default {
         });
         return totalQty;
     },
+    submitFormDataPayment(){
+      if (!this.formDataPayment.amount) {
+        this.formDataPayment.amount = this.getTotalPrice();
+      }
+      if (!this.formDataPayment.number_card) {
+        this.formDataPayment.number_card = 0;
+      }
+      if (!this.formDataPayment.code_ref) {
+        this.formDataPayment.code_ref = 0;
+      }
+      this.formDataPayment.transactions = [];
+      this.items.forEach(item => {
+        this.formDataPayment.transactions.push(item.product_id);
+      });
+      
+      axios.post('http://127.0.0.1:8000/api/payments', this.formDataPayment)
+      .then(response => {
+        this.cash = '';
+        this.formDataPayment={
+          amount: '',
+          metode: '',
+          number_card: '',
+          code_ref:'',
+        };
+        this.isPaymentModalOpen = false;
+        this.fetchData();
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    },
     scanProduct(){
       axios.post('http://127.0.0.1:8000/api/carts', this.formDataCart)
       .then(response => {
@@ -201,10 +205,23 @@ export default {
         console.error(error);
       });
     },
+    getChange() {
+      return this.cash - this.getTotalPrice();
+    },
+    deleteItem(id){
+      axios.delete('http://127.0.0.1:8000/api/carts/'+id)
+        .then(response => {
+          this.fetchData();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     fetchData() {
       axios.get('http://127.0.0.1:8000/api/carts')
       .then(response => {
-          this.items = response.data;
+        this.formDataCart.product_id = '';
+        this.items = response.data;
       })
       .catch(error => {
           console.error('Error fetching data:', error);

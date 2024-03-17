@@ -9,11 +9,5 @@ class Payment extends Model
 {
     use HasFactory;
 
-
-    protected $fillable = ['cash', 'metode', 'number_card', 'date', 'status', 'code_ref'];
-
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
+    protected $fillable = ['amount', 'metode', 'number_card', 'date', 'status', 'code_ref'];
 }

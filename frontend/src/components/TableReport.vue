@@ -204,7 +204,7 @@ export default {
             this.editModal = false;
         },
         editModalSubmit() {
-            axios.put('http://127.0.0.1:8000/api/payments', this.formData).then(ret => {
+            axios.put('http://127.0.0.1:8000/api/', this.formData).then(ret => {
                 this.formData = response.data;
                 console.log('sukses')
             }).catch(err=>{
@@ -233,13 +233,13 @@ export default {
             });
         },
         deleteItem(id) {
-            //axios.delete('http://127.0.0.1:8000/payments/'+id)
-            //    .then(response => {
-            //        console.log('data berhasil di hapus');
-            //    })
-            //    .catch(error => {
-            //        console.error('Error deleting data:', error);
-            //    });
+            axios.delete('http://127.0.0.1:8000/api/payments/'+id)
+                .then(response => {
+                    this.fetchData();
+                })
+                .catch(error => {
+                    console.error('Error deleting data:', error);
+                });
         },
     },
     mounted(){

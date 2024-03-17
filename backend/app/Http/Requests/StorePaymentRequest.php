@@ -11,9 +11,9 @@ class StorePaymentRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +21,15 @@ class StorePaymentRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            'id' => 'nullable',
+            'amount' => 'nullable',
+            'metode' => 'nullable',
+            'number_card' => 'nullable',
+            'code_ref' => 'nullable',
+            'payment_id' => 'nullable',
         ];
     }
 }

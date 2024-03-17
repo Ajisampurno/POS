@@ -11,9 +11,4 @@ class TransactionDetail extends Model
 
 
     protected $fillable = ['id'];
-
-    public function transaction()
-    {
-        return $this->belongsTo(Transaction::class);
-    }
 }
