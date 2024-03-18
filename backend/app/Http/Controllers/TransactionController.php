@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
+use App\Models\TransactionDetail;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
-use App\Models\Payment;
-use App\Models\TransactionDetail;
 
 class TransactionController extends Controller
 {
@@ -18,9 +19,8 @@ class TransactionController extends Controller
 
     public function api()
     {
-        $data = Payment::all();
 
-        //$data = Payment::with('transactions')->get();
+        $data = Transaction::with(['transactionDetails.product', 'user', 'payment'])->get();
         return $data;
     }
 
@@ -64,11 +64,10 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        $data = Payment::select('*')
-            ->join('transactions', 'transactions.payment_id', '=', 'payments.id')
-            ->join('products', 'products.id', '=', 'product_id')
-            ->where('payments.id', $transaction->id)
+        $data = TransactionDetail::with('product')
+            ->where('transaction_id', $transaction->id)
             ->get();
+
         return $data;
     }
 
@@ -90,16 +89,12 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTransactionRequest $request, Transaction $transaction)
+    public function update(Request $request, Transaction $transaction)
     {
-        $this->validate($request, [
-            'desc' => ['required'],
-            'status' => ['required'],
-            'metode' => ['required'],
-            'card_number' => ['required'],
-            'code_ref' => ['required'],
-        ]);
-        Payment::finOrFail($request->id)->update($request->all());
+        $product = Payment::findOrFail($transaction->payment_id);
+        $product->update($request->all());
+
+        return true;
     }
 
     /**

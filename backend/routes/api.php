@@ -38,4 +38,8 @@ Route::get('carts', [CartController::class, 'api']);
 Route::post('carts', [CartController::class, 'store']);
 Route::delete('carts/{cart}', [CartController::class, 'destroy']);
 
+Route::get('transactions', [TransactionController::class, 'api']);
 Route::post('transactions', [TransactionController::class, 'store']);
+Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
+Route::put('transactions/{transaction}', [TransactionController::class, 'update']);
+Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy']);

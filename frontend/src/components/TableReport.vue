@@ -35,8 +35,8 @@
                         <tr>
                             <th class="px-4 py-2 text-center">Kode Trx</th>
                             <th class="px-4 py-2 text-center">Date</th>
+                            <th class="px-4 py-2 text-center">Cashier Name</th>
                             <th class="px-4 py-2 text-center">Status</th>
-                            <th class="px-4 py-2 text-center">Metode Pembayaran</th>
                             <th class="px-4 py-2 text-center">Action</th>
                         </tr>
                     </thead>
@@ -44,8 +44,8 @@
                         <tr v-for="(transaction, index) in paginatedTransactions" :key="index" class="text-gray-700 bg-gray-100">
                             <td class="border px-4 py-2 text-center">{{ transaction.id }}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.date}}</td>
+                            <td class="border px-4 py-2 text-center">{{ transaction.user.name}}</td>
                             <td class="border px-4 py-2 text-center">{{ transaction.status }}</td>
-                            <td class="border px-4 py-2 text-center">{{ transaction.metode }}</td>
                             <td class="border px-4 py-2 text-center">
                                 <button @click="showModalOpen(transaction.id)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Show</button>
                                 <button @click="editModalOpen(transaction.id)" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</button>
@@ -83,10 +83,10 @@
             <tbody>
                 <tr class="" v-for="(detail, index) in transactionDetail" :key="index">
                     <td class="border px-4 py-2 text-center">{{ index+1 }}</td>
-                    <td class="border px-4 py-2">{{ detail.desc }}</td>
-                    <td class="border px-4 py-2 text-center">{{ detail.category }}</td>
-                    <td class="border px-4 py-2 text-center">{{ detail.qty }}</td>
-                    <td class="border px-4 py-2 text-center">{{ detail.price }}</td>
+                    <td class="border px-4 py-2">{{ detail.product.desc }}</td>
+                    <td class="border px-4 py-2 text-center">{{ detail.product.category }}</td>
+                    <td class="border px-4 py-2 text-center">{{ detail.product.qty }}</td>
+                    <td class="border px-4 py-2 text-center">{{ detail.product.price }}</td>
                 </tr>
             </tbody>
         </table>
@@ -102,14 +102,6 @@
 <div :class="{ 'hidden': !editModal }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
     <div class="bg-white p-8 rounded-md w-[700px]">
         <h2 class="text-lg font-semibold">Add Product Modal</h2>
-        <label for="date" class="block mt-2">Date</label>
-        <input type="date" id="date" name="date" v-model="formData.date" class=" border rounded-md shadow-md w-full p-1">
-        <label for="status" class="block mt-2">Status</label>
-        <select name="status" id="status" v-model="this.formData.status">
-            <option value="">Pilih metode pembayaran</option>
-            <option value="Sale">Sale</option>
-            <option value="Retur">Retur</option>
-        </select>
         <label for="metode" class="block mt-2">Metode</label>
         <select name="metode" id="metode" v-model="formData.metode">
             <option value="">Pilih metode pembayaran</option>
@@ -124,7 +116,7 @@
         <input type="number" id="code_ref" name="code_ref" v-model="formData.code_ref" class=" border rounded-md shadow-md w-full p-1">
         <div class="flex my-2 justify-end mt-2">
             <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
-            <button @click="editModalSubmit" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
+            <button @click="editModalSubmit(formData.id)" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
         </div>
     </div>
 </div>
@@ -149,9 +141,9 @@ export default {
             showModal: false,
             editModal: false,
             formData: {
-                date: "",
-                status:[],
-                metode:"",   
+                metode: '',
+                card_number:'',
+                code_ref:'',   
             }
         };
     },
@@ -181,8 +173,8 @@ export default {
     },
     methods: {
         //Action show modal
-        showModalOpen(transaction_id) {
-            axios.get('http://127.0.0.1:8000/api/payments/'+transaction_id)
+        showModalOpen(id) {
+            axios.get('http://127.0.0.1:8000/api/transactions/'+id)
             .then(response => {
                 this.transactionDetail = response.data;
                 this.showModal = true;
@@ -197,16 +189,16 @@ export default {
         //Action edit modal
         editModalOpen(index) {
             this.editModal = true;
-            this.formData = this.transactions[index];
+            this.formData = this.transactions[index].payment;
             console.log('Edit item:', this.formData);
         },
         editModalClose(){
             this.editModal = false;
         },
-        editModalSubmit() {
-            axios.put('http://127.0.0.1:8000/api/', this.formData).then(ret => {
-                this.formData = response.data;
-                console.log('sukses')
+        editModalSubmit(index) {
+            this.id = index-1;
+            axios.put('http://127.0.0.1:8000/api/transactions/'+this.id, this.formData).then(ret => {
+                this.editModal = false;
             }).catch(err=>{
                 console.log("GAGAL SUBMIT", err)
             })
@@ -222,24 +214,24 @@ export default {
                 this.currentPage++;
             }
         },
+        deleteItem(id) {
+        axios.delete('http://127.0.0.1:8000/api/transactions/'+id)
+            .then(response => {
+                this.fetchData();
+            })
+            .catch(error => {
+                console.error('Error deleting data:', error);
+            });
+        },
         // Action data main
         fetchData() {
-            axios.get('http://127.0.0.1:8000/api/payments')
+            axios.get('http://127.0.0.1:8000/api/transactions')
             .then(response => {
                 this.transactions = response.data;
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-        },
-        deleteItem(id) {
-            axios.delete('http://127.0.0.1:8000/api/payments/'+id)
-                .then(response => {
-                    this.fetchData();
-                })
-                .catch(error => {
-                    console.error('Error deleting data:', error);
-                });
         },
     },
     mounted(){

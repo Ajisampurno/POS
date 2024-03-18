@@ -15,6 +15,10 @@ class CreateTransactionDetailsTable extends Migration
     {
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->id();
+            $table->integer('transaction_id');
+            $table->integer('product_id');
+            $table->integer('qty');
+            $table->integer('price');
             $table->timestamps();
         });
     }

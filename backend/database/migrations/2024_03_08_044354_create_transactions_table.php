@@ -15,9 +15,10 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id');
             $table->integer('payment_id');
-            $table->integer('product_id');
-            $table->integer('qty');
+            $table->date('date');
+            $table->string('status');
             $table->timestamps();
         });
     }

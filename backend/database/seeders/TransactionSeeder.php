@@ -21,10 +21,10 @@ class TransactionSeeder extends Seeder
 
         for ($i = 0; $i < 20; $i++) {
             $transaction = new Transaction;
+            $transaction->user_id = $faker->numberBetween(1, 3);
             $transaction->payment_id = $faker->numberBetween(1, 20);
-            $transaction->product_id = $faker->numberBetween(1, 20);
-            $transaction->qty = $faker->numberBetween(1, 20);
-
+            $transaction->date = $faker->date();
+            $transaction->status = $faker->randomElement(['sold', 'refund']);
             $transaction->save();
         }
     }
