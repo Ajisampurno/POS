@@ -14,9 +14,9 @@ class CreateTransactionsTable extends Migration
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+            $table->string('id');
             $table->integer('user_id');
-            $table->integer('payment_id');
+            $table->string('payment_id');
             $table->date('date');
             $table->string('status');
             $table->timestamps();

@@ -6,6 +6,7 @@ use App\Models\Payment;
 
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
+use Ramsey\Uuid\Uuid;
 
 class PaymentSeeder extends Seeder
 {
@@ -17,6 +18,7 @@ class PaymentSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
+        $uuid = Uuid::uuid4()->toString();
 
         for ($i = 0; $i < 20; $i++) {
             $payment = new Payment;

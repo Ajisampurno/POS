@@ -19,7 +19,6 @@ class TransactionController extends Controller
 
     public function api()
     {
-
         $data = Transaction::with(['transactionDetails.product', 'user', 'payment'])->get();
         return $data;
     }
@@ -77,9 +76,13 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function edit(Transaction $transaction)
+    public function edit($id)
     {
-        //
+        $data = Transaction::select('payments.id', 'metode', 'number_card', 'code_ref')
+            ->join('payments', 'payments.id', '=', 'transactions.payment_id')
+            ->where('transactions.id', $id)
+            ->get();
+        return response()->json($data);;
     }
 
     /**
@@ -89,10 +92,15 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Transaction $transaction)
+    public function update(Request $request, $id)
     {
-        $product = Payment::findOrFail($transaction->payment_id);
-        $product->update($request->all());
+        $data = Payment::findOrFail($id);
+
+        $data->update([
+            'metode' => $request->metode,
+            'number_card' => $request->number_card,
+            'code_ref' => $request->code_ref
+        ]);
 
         return true;
     }
@@ -105,8 +113,14 @@ class TransactionController extends Controller
      */
     public function destroy($id)
     {
-        Payment::find($id)->delete();
+        $transaksi = Transaction::findOrFail($id);
 
+        // Hapus terlebih dahulu pembayaran yang terkait
+        $transaksi->payment()->delete();
+        $transaksi->transactionDetails()->delete();
+
+        // Setelah itu baru hapus transaksi itu sendiri
+        $transaksi->delete();
         return true;
     }
 }

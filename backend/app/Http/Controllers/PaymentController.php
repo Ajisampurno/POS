@@ -9,6 +9,11 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use App\Models\TransactionDetail;
+use Illuminate\Support\Facades\DB;
+
+
+
 
 class PaymentController extends Controller
 {
@@ -39,26 +44,65 @@ class PaymentController extends Controller
         //
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StorePaymentRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePaymentRequest $request)
+    public function store(Request $request)
     {
+        $userId = 1;
+
+        $tanggal = date('Ymd');
         $uuid = Uuid::uuid4();
-        Payment::create([
-            'id' => $uuid,
-            'amount' => $request->amount,
-            'metode' => $request->metode,
-            'number_card' => $request->number_card,
-            'date' => date('y-m-d'),
-            'status' => 'sale',
-            'code_ref' => $request->code_ref
+        $paymentId = 'PAY-' . $userId . '-' . $tanggal . '-' . $uuid;
+        $transactionId = 'TRX-' . $userId . '-' . $tanggal . '-' . $uuid;
+
+        $request->validate([
+            'metode' => 'nullable',
+            'number_card' => 'nullable',
+            'code_ref' => 'nullable',
         ]);
-        Cart::truncate();
-        return true;
+
+        DB::beginTransaction(); // Mulai transaksi database
+
+        try {
+            Transaction::create([
+                'id' => $transactionId,
+                'user_id' => $userId,
+                'payment_id' => $paymentId,
+                'date' => date('Ymd'),
+                'status' => 'sold',
+            ]);
+
+            Payment::create([
+                'id' => $paymentId,
+                'metode' => $request->metode,
+                'number_card' => $request->number_card,
+                'code_ref' => $request->code_ref
+            ]);
+
+            $carts = Cart::select('product_id', 'carts.qty', 'products.price')
+                ->join('products', 'products.id', '=', 'carts.product_id')
+                ->get();
+
+            foreach ($carts as $detail) {
+                TransactionDetail::create([
+                    'transaction_id' => $transactionId,
+                    'product_id' => $detail->product_id,
+                    'qty' => $detail->qty,
+                    'price' => $detail->price
+                ]);
+            }
+            DB::commit();
+            Cart::truncate();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollback();
+            return false;
+        }
     }
 
     /**
@@ -95,9 +139,16 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePaymentRequest $request, Payment $payment)
+    public function update(Request $request, $id)
     {
-        //
+        $data = Payment::findOrFail($id);
+
+        $data->update([
+            'metode' => $request->metode,
+            'number_card' => $request->number_card,
+            'code_ref' => $request->code_ref
+        ]);
+        return true;
     }
 
     /**
