@@ -215,6 +215,7 @@ export default {
       axios.put('http://127.0.0.1:8000/api/products/'+id,this.formData)
         .then(response => {
             this.editModal = false;
+            console.log(this.formData);
             this.fetchData();
         })
         .catch(error => {

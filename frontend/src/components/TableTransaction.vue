@@ -43,7 +43,13 @@
                 <td class="border px-4 py-2 text-center">{{ item.desc }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.category }}</td>
                 <td class="border flex justify-center px-2 py-2">
-                    <input type="number" :name="'qty_' + index" v-model="item.qty" min="1" class="flex w-[100px] border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center">
+                    <input 
+                      type="number" 
+                      :name="'qty_' + index" 
+                      v-model="item.qty" 
+                      @input="updateQty(index, $event.target.value)"
+                      min="1" 
+                      class="flex w-[100px] border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center">
                 </td>
                 <td class="border px-4 py-2 text-center">{{ item.price }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.price * item.qty }}</td>
@@ -175,16 +181,12 @@ export default {
       if (!this.formDataPayment.code_ref) {
         this.formDataPayment.code_ref = 0;
       }
-      this.formDataPayment.transactions = [];
-      this.items.forEach(item => {
-        this.formDataPayment.transactions.push(item.product_id);
-      });
       
+      console.log(this.formDataPayment);
       axios.post('http://127.0.0.1:8000/api/payments', this.formDataPayment)
       .then(response => {
         this.cash = '';
         this.formDataPayment={
-          amount: '',
           metode: '',
           number_card: '',
           code_ref:'',
@@ -217,11 +219,25 @@ export default {
           console.log(error);
         });
     },
+    updateQty(index, newValue) {
+      this.items[index].qty = newValue;
+      this.formDataPayment.transactions[index].qty = newValue;
+    },
     fetchData() {
       axios.get('http://127.0.0.1:8000/api/carts')
       .then(response => {
         this.formDataCart.product_id = '';
         this.items = response.data;
+        this.formDataPayment.transactions = [];
+
+        response.data.forEach(cartItem => {
+            const transaction = {
+                product_id: cartItem.product_id,
+                qty: cartItem.qty,
+                price: cartItem.price
+            };
+            this.formDataPayment.transactions.push(transaction);
+        });
       })
       .catch(error => {
           console.error('Error fetching data:', error);

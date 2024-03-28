@@ -85,7 +85,7 @@
                     <td class="border px-4 py-2 text-center">{{ index+1 }}</td>
                     <td class="border px-4 py-2">{{ detail.product.desc }}</td>
                     <td class="border px-4 py-2 text-center">{{ detail.product.category }}</td>
-                    <td class="border px-4 py-2 text-center">{{ detail.product.qty }}</td>
+                    <td class="border px-4 py-2 text-center">{{ detail.qty }}</td>
                     <td class="border px-4 py-2 text-center">{{ detail.product.price }}</td>
                 </tr>
             </tbody>
@@ -99,27 +99,36 @@
 </div>
 
 <!-- Edit Modal -->
-<div :class="{ 'hidden': !editModal }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-    <div class="bg-white p-8 rounded-md w-[700px]">
-        <h2 class="text-lg font-semibold">Add Product Modal</h2>
-        <label for="metode" class="block mt-2">Metode</label>
-        <select name="metode" id="metode" v-model="formData.metode">
-            <option value="">Pilih metode pembayaran</option>
-            <option value="Debit">Debit</option>
-            <option value="Credit">Credit</option>
-            <option value="Qris">Qris</option>
-            <option value="Cash">Cash</option>
-        </select>
-        <label for="number_card" class="block mt-2">Card number</label>
-        <input type="number" id="number_card" name="number_card" v-model="formData.number_card" class=" border rounded-md shadow-md w-full p-1">
-        <label for="code_ref" class="block mt-2">Code referensi</label>
-        <input type="number" id="code_ref" name="code_ref" v-model="formData.code_ref" class=" border rounded-md shadow-md w-full p-1">
-        <div class="flex my-2 justify-end mt-2">
-            <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
-            <button @click="editModalSubmit(formData.id)" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
-        </div>
+<div>
+    <!-- Edit Modal -->
+    <div :class="{ 'hidden': !editModal }" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div class="bg-white p-8 rounded-md w-[700px]">
+        <h2 class="text-lg font-semibold">Edit Product Modal</h2>
+        <ul v-for="(transaction, index) in formData" :key="index">
+            <li>
+                <label for="metode" class="flex text-gray-500">Metode pembayaran</label>
+                <select name="metode" id="metode" v-model="transaction.metode" class=" border-gray-500 rounded w-full text-gray-500">
+                    <option value="">Pilih metode pembayaran</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Debit BCA" class="text-gray-500">Debit BCA</option>
+                </select>
+            </li>
+            <li>
+                <label for="number_card" class="flex text-gray-500">Number Card</label>
+                <input type="number" name="number_card" id="number_card" v-model="transaction.number_card" class="border-gray-500 rounded w-full text-gray-500">
+            </li>
+            <li>
+                <label for="code_ref" class="flex text-gray-500">Kode referensi</label>
+                <input type="number" name="code_ref" id="code_ref" v-model="transaction.number_card" class="border-gray-500 rounded w-full text-gray-500">
+            </li>
+            <div class="flex my-2 justify-end mt-2">
+              <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
+              <button @click="editModalSubmit(transaction,transaction.id)" class="bg-blue-400 hover:bg-blue-700 text-white px-5 py-2 rounded">Simpan</button>
+            </div>
+        </ul>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -128,7 +137,11 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            data:[],
+            formData: {
+            metode: '',
+            number_card: '',
+            code_ref: ''
+            },
             transactions: [],
             transactionDetail: [],
             searchQuery: '',
@@ -140,11 +153,6 @@ export default {
             itemsPerPage: 10,
             showModal: false,
             editModal: false,
-            formData: {
-                metode: '',
-                card_number:'',
-                code_ref:'',   
-            }
         };
     },
     computed: {
@@ -178,6 +186,7 @@ export default {
             .then(response => {
                 this.transactionDetail = response.data;
                 this.showModal = true;
+                console.log(this.transactionDetail);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -186,18 +195,22 @@ export default {
         showModalClose() {
             this.showModal = false;
         },
-        //Action edit modal
-        editModalOpen(index) {
-            this.editModal = true;
-            this.formData = this.transactions[index].payment;
-            console.log('Edit item:', this.formData);
+        editModalOpen(id) {
+            axios.get('http://127.0.0.1:8000/api/transactions_edit/'+id)
+            .then(response => {
+                this.formData = response.data;
+                this.editModal = true;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
         },
         editModalClose(){
             this.editModal = false;
         },
-        editModalSubmit(index) {
-            this.id = index-1;
-            axios.put('http://127.0.0.1:8000/api/transactions/'+this.id, this.formData).then(ret => {
+        editModalSubmit(transaction,id) {
+            axios.put('http://127.0.0.1:8000/api/transactions/'+id, transaction).then(ret => {
+                this.fetchData();
                 this.editModal = false;
             }).catch(err=>{
                 console.log("GAGAL SUBMIT", err)
@@ -235,7 +248,7 @@ export default {
         },
     },
     mounted(){
-        this.fetchData();       
+        this.fetchData(); 
     }
 };
 </script>
