@@ -42,7 +42,7 @@
                 </td>
                 <td class="border px-4 py-2 text-center">{{ item.desc }}</td>
                 <td class="border px-4 py-2 text-center">{{ item.category }}</td>
-                <td class="border flex justify-center px-2 py-2">
+                <td class="border px-4 py-2 text-center">
                     <input 
                       type="number" 
                       :name="'qty_' + index" 
@@ -172,31 +172,31 @@ export default {
         return totalQty;
     },
     submitFormDataPayment(){
-      if (!this.formDataPayment.amount) {
-        this.formDataPayment.amount = this.getTotalPrice();
+      if(confirm('Pastikan transaksi sudah sesuai, jika sesuai maka Gas aja!!')){
+        if (!this.formDataPayment.amount) {
+          this.formDataPayment.amount = this.getTotalPrice();
+        }
+        if (!this.formDataPayment.number_card) {
+          this.formDataPayment.number_card = 0;
+        }
+        if (!this.formDataPayment.code_ref) {
+          this.formDataPayment.code_ref = 0;
+        }
+        axios.post('http://127.0.0.1:8000/api/payments', this.formDataPayment)
+        .then(response => {
+          this.cash = '';
+          this.formDataPayment={
+            metode: '',
+            number_card: '',
+            code_ref:'',
+          };
+          this.isPaymentModalOpen = false;
+          this.fetchData();
+        })
+        .catch(error => {
+          console.error(error);
+        });
       }
-      if (!this.formDataPayment.number_card) {
-        this.formDataPayment.number_card = 0;
-      }
-      if (!this.formDataPayment.code_ref) {
-        this.formDataPayment.code_ref = 0;
-      }
-      
-      console.log(this.formDataPayment);
-      axios.post('http://127.0.0.1:8000/api/payments', this.formDataPayment)
-      .then(response => {
-        this.cash = '';
-        this.formDataPayment={
-          metode: '',
-          number_card: '',
-          code_ref:'',
-        };
-        this.isPaymentModalOpen = false;
-        this.fetchData();
-      })
-      .catch(error => {
-        console.error(error);
-      });
     },
     scanProduct(){
       axios.post('http://127.0.0.1:8000/api/carts', this.formDataCart)
@@ -204,20 +204,26 @@ export default {
         this.fetchData();
       })
       .catch(error => {
-        console.error(error);
+        if (error.response.status === 400) {
+          alert('Stok produk kosong!');
+        } else {
+          alert('Terjadi kesalahan saat menambahkan produk ke keranjang');
+        }
       });
     },
     getChange() {
       return this.cash - this.getTotalPrice();
     },
     deleteItem(id){
-      axios.delete('http://127.0.0.1:8000/api/carts/'+id)
+      if(confirm('Anda yakin ingin menghapus ini?')){
+        axios.delete('http://127.0.0.1:8000/api/carts/'+id)
         .then(response => {
           this.fetchData();
         })
         .catch(error => {
           console.log(error);
         });
+      }
     },
     updateQty(index, newValue) {
       this.items[index].qty = newValue;

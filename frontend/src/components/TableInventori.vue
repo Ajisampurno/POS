@@ -216,6 +216,7 @@ export default {
         .then(response => {
             this.editModal = false;
             console.log(this.formData);
+            alert('Data berhasil di rubah');
             this.fetchData();
         })
         .catch(error => {
@@ -223,13 +224,15 @@ export default {
         });
     },
     deleteItem(id) {
-      axios.delete('http://127.0.0.1:8000/api/products/'+id)
-        .then(response => {
-          this.fetchData();
-        })
-        .catch(error => {
-          console.error('Error deleting data:', error);
-        });
+      if(confirm('Yakin anda ingin meghapus ini?')){
+        axios.delete('http://127.0.0.1:8000/api/products/'+id)
+          .then(response => {
+            this.fetchData();
+          })
+          .catch(error => {
+            console.error('Error deleting data:', error);
+          });
+        }
       },
       formatCurrency(value) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
@@ -239,6 +242,7 @@ export default {
         .then(ret => {
           this.fetchData();
           this.createModal = false;
+          alert('Data berhasil di simpan');
         })
         .catch(error => {
             console.error('Error deleting data:', error);

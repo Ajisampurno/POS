@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
+use App\Models\Product;
 
 class CartController extends Controller
 {
@@ -18,6 +19,7 @@ class CartController extends Controller
     {
         $data = Cart::select('carts.id', 'product_id', 'desc', 'category', 'carts.qty', 'price')
             ->join('products', 'products.id', '=', 'carts.product_id')
+            ->orderBy('carts.id', 'desc')
             ->get();
 
         return $data;
@@ -46,14 +48,16 @@ class CartController extends Controller
      */
     public function store(StoreCartRequest $request)
     {
-        try {
+        $product = Product::findOrFail($request->product_id);
+
+        if ($product->stock <= 0) {
+            return response()->json(['error'], 400);
+        } else {
             Cart::create($request->all());
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            // Penanganan kesalahan
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json(['success']);
         }
     }
+
 
     /**
      * Display the specified resource.

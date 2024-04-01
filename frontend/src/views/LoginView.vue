@@ -28,7 +28,6 @@ export default {
     },
     methods: {
         login() {
-            // Kirim permintaan login menggunakan Axios
             axios.post('http://127.0.0.1:8000/api/login', {
                 email: this.email,
                 password: this.password
@@ -37,7 +36,6 @@ export default {
                     window.location.href = response.data.redirect;
                 })
                 .catch(error => {
-                    // Tindakan jika login gagal
                     console.error('Login failed:', error);
                 });
         }

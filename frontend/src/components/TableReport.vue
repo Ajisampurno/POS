@@ -119,7 +119,7 @@
             </li>
             <li>
                 <label for="code_ref" class="flex text-gray-500">Kode referensi</label>
-                <input type="number" name="code_ref" id="code_ref" v-model="transaction.number_card" class="border-gray-500 rounded w-full text-gray-500">
+                <input type="number" name="code_ref" id="code_ref" v-model="transaction.code_ref" class="border-gray-500 rounded w-full text-gray-500">
             </li>
             <div class="flex my-2 justify-end mt-2">
               <button @click="editModalClose" class="bg-red-400 hover:bg-red-700 text-white px-5 py-2 me-2 rounded">Cancel</button>
@@ -212,6 +212,7 @@ export default {
             axios.put('http://127.0.0.1:8000/api/transactions/'+id, transaction).then(ret => {
                 this.fetchData();
                 this.editModal = false;
+                alert('Data berhasil di simpan');
             }).catch(err=>{
                 console.log("GAGAL SUBMIT", err)
             })
@@ -228,15 +229,16 @@ export default {
             }
         },
         deleteItem(id) {
-        axios.delete('http://127.0.0.1:8000/api/transactions/'+id)
-            .then(response => {
-                this.fetchData();
-            })
-            .catch(error => {
-                console.error('Error deleting data:', error);
-            });
+            if(confirm("Yakin ingin menghapus data ini?")){
+                axios.delete('http://127.0.0.1:8000/api/transactions/'+id)
+                    .then(response => {
+                        this.fetchData();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting data:', error);
+                    });
+            }
         },
-        // Action data main
         fetchData() {
             axios.get('http://127.0.0.1:8000/api/transactions')
             .then(response => {
