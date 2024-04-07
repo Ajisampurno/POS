@@ -29,7 +29,8 @@ export default {
         return {
             name: '',
             email: '',
-            password: ''
+            password: '',
+            errorMessage: '' // Tambahkan properti errorMessage ke dalam data
         };
     },
     methods: {
@@ -40,14 +41,21 @@ export default {
                 email: this.email,
                 password: this.password
             })
-                .then(response => {
-                    alert('Registrasi berhasil')
-                    window.location.href = '/login';
-                })
-                .catch(error => {
+            .then(response => {
+                alert('Registrasi berhasil')
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    // Jika respons error memiliki properti response, data, dan message
                     this.errorMessage = error.response.data.message;
-                });
-        }
+                } else {
+                    // Jika respons error tidak sesuai dengan yang diharapkan
+                    this.errorMessage = 'Terjadi kesalahan saat melakukan registrasi.';
+                }
+            });
     }
+    }
+
 };
 </script>

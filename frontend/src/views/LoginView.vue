@@ -8,8 +8,7 @@
             </div>
             <div>
                 <label for="password" class="block mb-1">Password:</label>
-                <input type="password" v-model="password" id="password"
-                    class="w-full border border-gray-300 rounded px-4 py-2">
+                <input type="password" v-model="password" id="password" class="w-full border border-gray-300 rounded px-4 py-2">
             </div>
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Login</button>
         </form>
@@ -22,8 +21,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            email: '',
-            password: ''
+            email: 'ustiedemann@example.com',
+            password: 'password'
         };
     },
     methods: {
@@ -32,12 +31,12 @@ export default {
                 email: this.email,
                 password: this.password
             })
-                .then(response => {
-                    window.location.href = response.data.redirect;
-                })
-                .catch(error => {
-                    console.error('Login failed:', error);
-                });
+            .then(response => {
+                alert('login berhasil')
+            })
+            .catch(error => {
+                alert('login gagal');
+            });
         }
     }
 };

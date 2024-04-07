@@ -2,10 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\TransactionController;
 
 /*
@@ -22,9 +22,15 @@ use App\Http\Controllers\TransactionController;
 Route::middleware('auth:sanctum')->group(function () {
 });
 
+Route::middleware('auth:api')->group(function () {
+});
+Route::get('products', [ProductController::class, 'api']);
+
 // Route untuk login dan register
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/auth', [AuthController::class, 'index']);
+
 
 // Route untuk logout
 Route::post('/logout', [AuthController::class, 'logout']);
@@ -41,7 +47,6 @@ Route::get('payments/{payment}', [PaymentController::class, 'show']);
 Route::delete('payments/{payment}', [PaymentController::class, 'destroy']);
 
 // Route untuk produk
-Route::get('products', [ProductController::class, 'api']);
 Route::post('products', [ProductController::class, 'store']);
 Route::put('products/{product}', [ProductController::class, 'update']);
 Route::delete('products/{product}', [ProductController::class, 'destroy']);
