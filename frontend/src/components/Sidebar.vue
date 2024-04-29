@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
@@ -32,13 +31,10 @@ export default {
   },
   methods: {
     logout() {
-      axios.post('http://127.0.0.1:8000/api/logout')
-        .then(response => {
-          window.location.href = '/login';
-        })
-        .catch(error => {
-          console.error('Logout failed:', error);
-        });
+      if (confirm("Apakah anda yakin ingin logout?")) {
+        localStorage.removeItem('token');
+        this.$router.push('/login');
+      };
     }
   }
 };
