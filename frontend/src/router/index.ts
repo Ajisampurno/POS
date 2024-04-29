@@ -22,19 +22,42 @@ const router = createRouter({
     {
       path: '/',
       name: 'Transaction',
-      component: TransactionView
+      component: TransactionView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/inventori',
       name: 'Inventori',
-      component: InventoriView
+      component: InventoriView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/report',
       name: 'Report',
-      component: ReportView
+      component: ReportView,
+      meta: { requiresAuth: true },
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('token');
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated) {
+      next('/login');
+    } else {
+      next();
+    }
+  } else if (to.path === '/login' || to.path === '/register') {
+    if (isAuthenticated) {
+      next('/');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 export default router

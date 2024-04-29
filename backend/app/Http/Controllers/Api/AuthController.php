@@ -39,7 +39,7 @@ class AuthController extends Controller
         // $user=Auth::user();
         $token = $user->createToken('API Token')->accessToken;
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'user' => $user
         ]);
     }
@@ -63,10 +63,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Buat token otentikasi untuk user yang terdaftar
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('remember_token')->plainTextToken;
 
-        // Kembalikan response dengan token
         return response()->json(['token' => $token], 201);
     }
 

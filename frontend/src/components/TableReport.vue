@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from "@/plugins/axios";
 
 export default {
     data() {
@@ -182,7 +182,7 @@ export default {
     methods: {
         //Action show modal
         showModalOpen(id) {
-            axios.get('http://127.0.0.1:8000/api/transactions/'+id)
+            http.get('/transactions/'+id)
             .then(response => {
                 this.transactionDetail = response.data;
                 this.showModal = true;
@@ -196,7 +196,7 @@ export default {
             this.showModal = false;
         },
         editModalOpen(id) {
-            axios.get('http://127.0.0.1:8000/api/transactions_edit/'+id)
+            http.get('/transactions_edit/'+id)
             .then(response => {
                 this.formData = response.data;
                 this.editModal = true;
@@ -209,7 +209,7 @@ export default {
             this.editModal = false;
         },
         editModalSubmit(transaction,id) {
-            axios.put('http://127.0.0.1:8000/api/transactions/'+id, transaction).then(ret => {
+            http.put('/transactions/'+id, transaction).then(ret => {
                 this.fetchData();
                 this.editModal = false;
                 alert('Data berhasil di simpan');
@@ -230,7 +230,7 @@ export default {
         },
         deleteItem(id) {
             if(confirm("Yakin ingin menghapus data ini?")){
-                axios.delete('http://127.0.0.1:8000/api/transactions/'+id)
+                http.delete('/transactions/'+id)
                     .then(response => {
                         this.fetchData();
                     })
@@ -240,7 +240,7 @@ export default {
             }
         },
         fetchData() {
-            axios.get('http://127.0.0.1:8000/api/transactions')
+            http.get('/transactions')
             .then(response => {
                 this.transactions = response.data;
             })

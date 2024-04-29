@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '@/plugins/axios';
 
 export default {
     data() {
@@ -27,12 +27,15 @@ export default {
     },
     methods: {
         login() {
-            axios.post('http://127.0.0.1:8000/api/login', {
+            http.post('/login', {
                 email: this.email,
                 password: this.password
             })
-            .then(response => {
-                alert('login berhasil')
+            .then(ret => {
+                console.log(ret.data.token);
+                localStorage.setItem('token',ret.data.token);
+                alert('login berhasil');
+                this.$router.push('/');
             })
             .catch(error => {
                 alert('login gagal');

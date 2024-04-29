@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from "@/plugins/axios";
 
 export default {
   data() {
@@ -212,7 +212,7 @@ export default {
       this.editModal = false;
     },
     editModalSubmit(id){
-      axios.put('http://127.0.0.1:8000/api/products/'+id,this.formData)
+      http.put('/products/'+id,this.formData)
         .then(response => {
             this.editModal = false;
             console.log(this.formData);
@@ -225,7 +225,7 @@ export default {
     },
     deleteItem(id) {
       if(confirm('Yakin anda ingin meghapus ini?')){
-        axios.delete('http://127.0.0.1:8000/api/products/'+id)
+        http.delete('/products/'+id)
           .then(response => {
             this.fetchData();
           })
@@ -238,7 +238,7 @@ export default {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
       },
       submitFormProduct() {
-        axios.post('http://127.0.0.1:8000/api/products', this.formData)
+        http.post('/products', this.formData)
         .then(ret => {
           this.fetchData();
           this.createModal = false;
@@ -249,7 +249,7 @@ export default {
         });
     },
     fetchData() {
-      axios.get('http://127.0.0.1:8000/api/products')
+      http.get('/products')
         .then(response => {
           this.items = response.data;
         })

@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import axios from '@/plugins/axios';
+import http from "@/plugins/axios";
 
 export default {
   data() {
@@ -182,7 +182,7 @@ export default {
         if (!this.formDataPayment.code_ref) {
           this.formDataPayment.code_ref = 0;
         }
-        axios.post('http://127.0.0.1:8000/api/payments', this.formDataPayment)
+        http.post('/payments', this.formDataPayment)
         .then(response => {
           this.cash = '';
           this.formDataPayment={
@@ -199,7 +199,7 @@ export default {
       }
     },
     scanProduct(){
-      axios.post('http://127.0.0.1:8000/api/carts', this.formDataCart)
+      http.post('/carts', this.formDataCart)
       .then(response => {
         this.fetchData();
       })
@@ -216,7 +216,7 @@ export default {
     },
     deleteItem(id){
       if(confirm('Anda yakin ingin menghapus ini?')){
-        axios.delete('http://127.0.0.1:8000/api/carts/'+id)
+        http.delete('/carts/'+id)
         .then(response => {
           this.fetchData();
         })
@@ -230,7 +230,7 @@ export default {
       this.formDataPayment.transactions[index].qty = newValue;
     },
     fetchData() {
-      axios.get('http://127.0.0.1:8000/api/carts')
+      http.get('/carts')
       .then(response => {
         this.formDataCart.product_id = '';
         this.items = response.data;

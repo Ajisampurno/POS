@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/plugins/axios';
 
 export default {
     data() {
@@ -42,15 +42,13 @@ export default {
                 password: this.password
             })
             .then(response => {
-                alert('Registrasi berhasil')
+                alert('Registrasi berhasil');
                 window.location.href = '/login';
             })
             .catch(error => {
                 if (error.response && error.response.data && error.response.data.message) {
-                    // Jika respons error memiliki properti response, data, dan message
                     this.errorMessage = error.response.data.message;
                 } else {
-                    // Jika respons error tidak sesuai dengan yang diharapkan
                     this.errorMessage = 'Terjadi kesalahan saat melakukan registrasi.';
                 }
             });
